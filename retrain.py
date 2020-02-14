@@ -1,9 +1,9 @@
-
 # pylint: enable=line-too-long
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from subprocess import Popen
 
 import argparse
 import collections
@@ -13,6 +13,7 @@ import os.path
 import random
 import re
 import sys
+import os
 
 import numpy as np
 import tensorflow as tf
@@ -235,8 +236,14 @@ def create_bottleneck_file(bottleneck_path, image_lists, label_name, index,
         sess, image_data, jpeg_data_tensor, decoded_image_tensor,
         resized_input_tensor, bottleneck_tensor)
   except Exception as e:
-    raise RuntimeError('Error during processing file %s (%s)' % (image_path,
-                                                                 str(e)))
+    os.remove(image_path)
+    print('Error during processing file %s' % (image_path))
+    print('==============================================')
+    print("Failed, starting again!!!")
+    print('==============================================')
+    p = Popen("./retrain.sh", shell=True)
+    # raise RuntimeError('Error during processing file %s (%s)' % (image_path,
+    #                                                              str(e)))
   bottleneck_string = ','.join(str(x) for x in bottleneck_values)
   with open(bottleneck_path, 'w') as bottleneck_file:
     bottleneck_file.write(bottleneck_string)
@@ -1006,7 +1013,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--output_graph',
       type=str,
-      default='/tmp/output_graph.pb',
+      default='./model/output_graph.pb',
       help='Where to save the trained graph.'
   )
   parser.add_argument(
@@ -1027,7 +1034,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--output_labels',
       type=str,
-      default='/tmp/output_labels.txt',
+      default='./model/output_labels.txt',
       help='Where to save the trained graph\'s labels.'
   )
   parser.add_argument(

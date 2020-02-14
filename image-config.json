@@ -1,0 +1,13 @@
+{
+    "Records": [
+        {
+            "keywords": "roti",
+            "limit":600,
+            "type":"photo",
+            "format":"jpg",
+            "output_directory":"data",
+            "chromedriver":"/usr/bin/chromedriver",
+            "image_directory": "roti"
+        }
+    ]
+}

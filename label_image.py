@@ -21,6 +21,8 @@ import argparse
 
 import numpy as np
 import tensorflow as tf
+import operator
+import json
 
 
 def load_graph(model_file):
@@ -129,6 +131,7 @@ if __name__ == "__main__":
   output_operation = graph.get_operation_by_name(output_name)
 
   with tf.Session(graph=graph) as sess:
+    writer = tf.summary.FileWriter('./graphs', sess.graph)
     results = sess.run(output_operation.outputs[0], {
         input_operation.outputs[0]: t
     })
@@ -136,8 +139,15 @@ if __name__ == "__main__":
 
   top_k = results.argsort()[-5:][::-1]
   labels = load_labels(label_file)
-  for i in top_k:
-    print(labels[i], results[i])
+  # for i in top_k:
+  #   print(labels[i]+':', "{}%".format(results[i]*100))
+  response = {
+    'label': labels[top_k[0]],
+    'accuracy': results[top_k[0]]*100
+  }
+  print(json.JSONEncoder().encode(response))
+  # index, value = max(enumerate(results), key=operator.itemgetter(1))
+  # print(labels[index])
 
 
 # python label_image --image="input image dest"\
